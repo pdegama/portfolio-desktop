@@ -52,7 +52,7 @@ export function TopPanel() {
 
   return (
     <div
-      className="absolute top-0 left-0 z-[9999] flex h-8 w-full items-center justify-between border-b border-border bg-card px-3 text-card-foreground"
+      className="absolute top-0 left-0 z-9999 flex h-8 w-full items-center justify-between border-b border-border bg-card px-3 text-card-foreground"
       onPointerDown={(e) => e.stopPropagation()}
     >
       {/* Left */}

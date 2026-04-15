@@ -26,6 +26,7 @@ export interface WindowState {
   minimized: boolean
   maximized: boolean
   preMaxBounds: SavedBounds | null
+  maximiable: boolean
 }
 
 interface WindowStore {
@@ -36,6 +37,9 @@ interface WindowStore {
     title: string,
     Component: ComponentType<Record<string, unknown>>,
     props?: Record<string, unknown>,
+    width?: number,
+    height?: number,
+    maximiable?: boolean,
   ) => void
   closeWindow: (id: string) => void
   updatePosition: (id: string, x: number, y: number) => void
@@ -64,20 +68,20 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
   focusedId: null,
   _zCounter: 1,
 
-  createWindow: (title, Component, props = {}) =>
+  createWindow: (title, Component, props = {}, width = 320, height = 240, maximiable = true) =>
     set((state) => {
       const vw = window.innerWidth
       const vh = window.innerHeight
       const isSmall = vw <= 500
 
       const lastWindow = state.windows[state.windows.length - 1]
-      const baseX = Math.min(lastWindow ? lastWindow.x + 30 : 120, vw - PAD_R - 320)
-      const baseY = Math.min(lastWindow ? lastWindow.y + 30 : PAD_T + 40, vh - PAD_B - 240)
+      const baseX = Math.min(lastWindow ? lastWindow.x + 30 : 120, vw - PAD_R - width)
+      const baseY = Math.min(lastWindow ? lastWindow.y + 30 : PAD_T + 40, vh - PAD_B - height)
       const id = crypto.randomUUID()
 
       const bounds = isSmall
         ? { x: PAD_L, y: PAD_T, w: vw - PAD_L - PAD_R, h: vh - PAD_T - PAD_B }
-        : { x: baseX, y: baseY, w: 320, h: 240 }
+        : { x: baseX, y: baseY, w: width, h: height }
 
       return {
         _zCounter: state._zCounter + 1,
@@ -93,7 +97,8 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
             zIndex: state._zCounter + 1,
             minimized: false,
             maximized: isSmall,
-            preMaxBounds: isSmall ? { x: baseX, y: baseY, w: 320, h: 240 } : null,
+            preMaxBounds: isSmall ? { x: baseX, y: baseY, w: width, h: height } : null,
+            maximiable: maximiable
           },
         ],
       }
@@ -155,12 +160,12 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
       windows: state.windows.map((w) =>
         w.id === id
           ? {
-              ...w,
-              preMaxBounds: { x: w.x, y: w.y, w: w.w, h: w.h },
-              maximized: true,
-              ...bounds,
-              zIndex: state._zCounter + 1,
-            }
+            ...w,
+            preMaxBounds: { x: w.x, y: w.y, w: w.w, h: w.h },
+            maximized: true,
+            ...bounds,
+            zIndex: state._zCounter + 1,
+          }
           : w,
       ),
     }))

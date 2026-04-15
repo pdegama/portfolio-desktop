@@ -56,7 +56,7 @@
   --foreground: #f0f0f0;
   --card: #0d0d0d;
   --card-foreground: #f0f0f0;
-  --popover: #222327;
+  --popover: #090909;
   --popover-foreground: #f0f0f0;
   --primary: #813d9c;
   --primary-foreground: #ffffff;
@@ -143,7 +143,24 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Modern Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
   }
 }

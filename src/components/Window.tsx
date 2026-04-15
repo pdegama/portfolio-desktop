@@ -35,6 +35,7 @@ export const Window = memo(function Window({
   zIndex,
   minimized,
   maximized,
+  maximiable,
 }: WindowState) {
   const closeWindow = useWindowStore((s) => s.closeWindow)
   const updatePosition = useWindowStore((s) => s.updatePosition)
@@ -224,7 +225,7 @@ export const Window = memo(function Window({
       {/* Title bar */}
       <div
         onPointerDown={handleDragPointerDown}
-        onDoubleClick={isSmall ? undefined : () => toggleMaximize(id)}
+        onDoubleClick={isSmall || !maximiable ? undefined : () => toggleMaximize(id)}
         className={cn(
           'flex shrink-0 cursor-move items-center justify-between border-b px-3 py-2',
           isFocused ? 'border-primary/30 bg-primary/5 dark:bg-primary/20' : 'border-border bg-muted',
@@ -242,7 +243,7 @@ export const Window = memo(function Window({
           >
             <Minus className="size-3.5" />
           </Button>
-          {!isSmall && (
+          {!isSmall && maximiable && (
             <Button
               variant="outline"
               size="icon-xs"
@@ -271,20 +272,25 @@ export const Window = memo(function Window({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-4">
+      <div className={cn(
+        "flex-1 overflow-auto",
+        {
+          "p-4": !title.toLowerCase().includes("term")
+        }
+      )}>
         <Component {...props} />
       </div>
 
       {/* Resize handles — hidden when maximized */}
       {!maximized && (
         <>
-          <div onPointerDown={handleResizePointerDown('top')}    className="absolute top-0 left-1.5 right-1.5 h-1.5 cursor-n-resize" />
+          <div onPointerDown={handleResizePointerDown('top')} className="absolute top-0 left-1.5 right-1.5 h-1.5 cursor-n-resize" />
           <div onPointerDown={handleResizePointerDown('bottom')} className="absolute bottom-0 left-1.5 right-1.5 h-1.5 cursor-s-resize" />
-          <div onPointerDown={handleResizePointerDown('left')}   className="absolute top-1.5 bottom-1.5 left-0 w-1.5 cursor-w-resize" />
-          <div onPointerDown={handleResizePointerDown('right')}  className="absolute top-1.5 bottom-1.5 right-0 w-1.5 cursor-e-resize" />
-          <div onPointerDown={handleResizePointerDown('top-left')}     className="absolute top-0 left-0 size-2 cursor-nw-resize" />
-          <div onPointerDown={handleResizePointerDown('top-right')}    className="absolute top-0 right-0 size-2 cursor-ne-resize" />
-          <div onPointerDown={handleResizePointerDown('bottom-left')}  className="absolute bottom-0 left-0 size-2 cursor-sw-resize" />
+          <div onPointerDown={handleResizePointerDown('left')} className="absolute top-1.5 bottom-1.5 left-0 w-1.5 cursor-w-resize" />
+          <div onPointerDown={handleResizePointerDown('right')} className="absolute top-1.5 bottom-1.5 right-0 w-1.5 cursor-e-resize" />
+          <div onPointerDown={handleResizePointerDown('top-left')} className="absolute top-0 left-0 size-2 cursor-nw-resize" />
+          <div onPointerDown={handleResizePointerDown('top-right')} className="absolute top-0 right-0 size-2 cursor-ne-resize" />
+          <div onPointerDown={handleResizePointerDown('bottom-left')} className="absolute bottom-0 left-0 size-2 cursor-sw-resize" />
           <div onPointerDown={handleResizePointerDown('bottom-right')} className="absolute bottom-0 right-0 size-2 cursor-se-resize" />
         </>
       )}

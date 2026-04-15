@@ -1,21 +1,28 @@
 import type { ComponentType } from 'react'
-import { FileText, Info, Settings } from 'lucide-react'
+import { FileText, Info, Settings, Terminal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useWindowStore } from '@/store/window'
 import { FileApp } from '@/components/FileApp'
 import { AboutApp } from '@/components/AboutApp'
 import { SettingsApp } from '@/components/SettingsApp'
+import { TerminalApp } from '@/components/TerminalApp'
 
 interface DockItem {
   title: string
   icon: typeof FileText
-  Component: ComponentType<Record<string, unknown>>
+  Component: ComponentType<Record<string, unknown>>,
+  size?: {
+    width: number
+    height: number
+  },
+  maximiable?: boolean
 }
 
 const DOCK_ITEMS: DockItem[] = [
   { title: 'Files', icon: FileText, Component: FileApp },
-  { title: 'About', icon: Info, Component: AboutApp },
-  { title: 'Settings', icon: Settings, Component: SettingsApp },
+  { title: 'Terminal', icon: Terminal, Component: TerminalApp, size: { width: 700, height: 450 } },
+  { title: 'About', icon: Info, Component: AboutApp, maximiable: false },
+  { title: 'Settings', icon: Settings, Component: SettingsApp, size: { width: 600, height: 400 } },
 ]
 
 export function Dock() {
@@ -32,7 +39,7 @@ export function Dock() {
 
     if (existing.length === 0) {
       // No instance — open new
-      createWindow(item.title, item.Component)
+      createWindow(item.title, item.Component, {}, item.size?.width, item.size?.height, item.maximiable)
     } else if (existing.length === 1) {
       const win = existing[0]
       if (win.minimized) {
@@ -58,7 +65,7 @@ export function Dock() {
 
   return (
     <div
-      className="absolute bottom-[5px] left-1/2 z-[9999] flex -translate-x-1/2 items-end gap-1 rounded-xl border border-border bg-card px-2 py-1.5"
+      className="absolute bottom-[5px] left-1/2 z-9999 flex -translate-x-1/2 items-end gap-1 rounded-lg border border-border bg-card px-2 py-1.5"
       onPointerDown={(e) => e.stopPropagation()}
     >
       {DOCK_ITEMS.map((item) => {
@@ -72,7 +79,7 @@ export function Dock() {
             onClick={() => handleClick(item)}
             title={item.title}
             className={cn(
-              'group relative flex size-10 items-center justify-center rounded-lg transition-all duration-150',
+              'cursor-pointer group relative flex size-10 items-center justify-center rounded-lg transition-all duration-150',
               isActive
                 ? 'bg-primary/15 text-primary'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground',

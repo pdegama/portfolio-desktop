@@ -17,7 +17,9 @@ export const ACCENT_COLORS: AccentColor[] = [
 ]
 
 export const WALLPAPERS = [
+  { name: 'Abstract', url: "./StockCake-Pixel_Mountain_Sunset-3325121-standard.jpg" },
   { name: 'Pixel Night', url: '/default.jpg' },
+  { name: 'No Air', url: "./1600w-LEFL5_yVCqY.webp" },
   { name: 'None', url: '' },
 ]
 
