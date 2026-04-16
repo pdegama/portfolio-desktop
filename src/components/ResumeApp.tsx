@@ -147,7 +147,7 @@ export function ResumeApp() {
     <div className="max-w-3xl space-y-7 p-4 text-sm leading-relaxed">
       {/* Header — title left aligned */}
       <header className="space-y-2">
-        <h1 className="font-serif text-3xl font-semibold italic leading-none tracking-tight text-primary">
+        <h1 className="font-serif text-3xl font-semibold italic leading-none tracking-tight text-primary pb-1">
           Parth Degama
         </h1>
         <p className=" text-sm font-medium text-foreground">
