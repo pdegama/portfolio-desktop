@@ -36,6 +36,7 @@ export const Window = memo(function Window({
   minimized,
   maximized,
   maximiable,
+  padding,
 }: WindowState) {
   const closeWindow = useWindowStore((s) => s.closeWindow)
   const updatePosition = useWindowStore((s) => s.updatePosition)
@@ -275,7 +276,7 @@ export const Window = memo(function Window({
       <div className={cn(
         "flex-1 overflow-auto",
         {
-          "p-4": !title.toLowerCase().includes("term")
+          "p-4": padding
         }
       )}>
         <Component {...props} />

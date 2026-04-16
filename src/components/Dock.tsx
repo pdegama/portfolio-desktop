@@ -22,13 +22,14 @@ interface DockItem {
     width: number
     height: number
   },
-  maximiable?: boolean
+  maximiable?: boolean,
+  padding?: boolean,
 }
 
 const DOCK_ITEMS: DockItem[] = [
-  { title: 'Files', icon: FileText, Component: FileApp },
+  { title: 'Files', icon: FileText, Component: FileApp, padding: false },
   { title: 'Resume', icon: User, Component: ResumeApp, size: { width: 720, height: 640 } },
-  { title: 'Terminal', icon: Terminal, Component: TerminalApp, size: { width: 700, height: 450 } },
+  { title: 'Terminal', icon: Terminal, Component: TerminalApp, size: { width: 700, height: 450 }, padding: false },
   { title: 'About', icon: Info, Component: AboutApp, maximiable: false },
   { title: 'Settings', icon: Settings, Component: SettingsApp, size: { width: 600, height: 460 } },
 ]
@@ -47,7 +48,7 @@ export function Dock() {
 
     if (existing.length === 0) {
       // No instance — open new
-      createWindow(item.title, item.Component, {}, item.size?.width, item.size?.height, item.maximiable)
+      createWindow(item.title, item.Component, {}, item.size?.width, item.size?.height, item.maximiable, item.padding)
     } else if (existing.length === 1) {
       const win = existing[0]
       if (win.minimized) {
