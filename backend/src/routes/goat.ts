@@ -21,8 +21,8 @@ router.post('/', (req, res) => {
   const tmpOut = path.join(tmpDir, `goat-out-${id}.svg`);
 
   const cleanup = () => {
-    fs.unlink(tmpIn, () => {});
-    fs.unlink(tmpOut, () => {});
+    fs.unlink(tmpIn, () => { });
+    fs.unlink(tmpOut, () => { });
   };
 
   fs.writeFileSync(tmpIn, code);
@@ -37,9 +37,19 @@ router.post('/', (req, res) => {
       }
 
       try {
-        const svg = fs.readFileSync(tmpOut, 'utf-8');
-        console.log(svg, tmpIn);
-        
+        let svg = fs.readFileSync(tmpOut, 'utf-8');
+        svg = svg.replace(
+          ":root { color-scheme: light dark; --aasvg-b: light-dark(black, white); --aasvg-w: light-dark(white, black); }",
+          ":root { color-scheme: light dark; --aasvg-b: var(--foreground); --aasvg-w: var(--background); }",
+        )
+        svg = svg.replace(
+          "* {",
+          ".aasvg * {"
+        )
+
+        console.log(svg);
+
+
         // cleanup();
         res.type('image/svg+xml').send(svg);
       } catch {

@@ -151,6 +151,9 @@
 }
 
 :root {
+  /* --aasvg-b: var(--foreground) !important;
+  --aasvg-w: var(--background) !important; */
+
   --background: #f5f5f4;
   --foreground: #44403b;
   --card: #fdfdfd;

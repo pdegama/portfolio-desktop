@@ -27,7 +27,7 @@ function GoatBlock({ code }: { code: string }) {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/goat', {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/goat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code }),
@@ -69,7 +69,7 @@ export function MarkdownAppBase({ filePath, fileName }: { filePath: string; file
   useEffect(() => {
     setLoading(true)
     setError('')
-    fetch(`http://localhost:3001/api/files/serve/${filePath}`)
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/files/serve/${filePath}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch file')
         return res.text()
@@ -100,7 +100,7 @@ export function MarkdownAppBase({ filePath, fileName }: { filePath: string; file
 
       if (match) {
         return (
-          <pre className="overflow-x-auto rounded-lg border bg-muted p-4 text-sm">
+          <pre className="my-6 overflow-x-auto border border-foreground/25 bg-foreground/5 px-3 py-5 text-[0.95em] text-primary/90">
             <code className={className} {...rest}>
               {children}
             </code>
@@ -109,7 +109,7 @@ export function MarkdownAppBase({ filePath, fileName }: { filePath: string; file
       }
 
       return (
-        <code className="rounded bg-muted px-1.5 py-0.5 text-sm" {...rest}>
+        <code className="border border-foreground/25 bg-foreground/5 px-1.5 py-0.5 text-[0.95em] text-primary/90" {...rest}>
           {children}
         </code>
       )
@@ -140,44 +140,50 @@ export function MarkdownAppBase({ filePath, fileName }: { filePath: string; file
         components={{
           code: renderCode,
           h1: ({ children }) => (
-            <h1 className="mb-4 border-b pb-2 text-2xl font-bold text-foreground">{children}</h1>
+            <h1 className="my-6 text-[1.45em] font-semibold text-foreground">{children}</h1>
           ),
           h2: ({ children }) => (
-            <h2 className="mb-3 border-b pb-1 text-xl font-semibold text-foreground">{children}</h2>
+            <h2 className="my-6 text-[1.35em] font-semibold text-foreground">{children}</h2>
           ),
           h3: ({ children }) => (
-            <h3 className="mb-2 text-lg font-semibold text-foreground">{children}</h3>
+            <h3 className="my-6 text-[1.15em] font-semibold text-foreground">{children}</h3>
           ),
           h4: ({ children }) => (
-            <h4 className="mb-1 text-base font-semibold text-foreground">{children}</h4>
+            <h4 className="my-6 text-base font-semibold text-foreground">{children}</h4>
           ),
-          p: ({ children }) => <p className="mb-3 text-muted-foreground">{children}</p>,
+          p: ({ children }) => <p className="my-6 text-muted-foreground">{children}</p>,
           a: ({ href, children }) => (
-            <a href={href} target="_blank" rel="noreferrer" className="text-primary underline hover:text-primary/80">
+            <a href={href} target="_blank" rel="noreferrer" className="text-primary hover:text-primary/80">
               {children}
             </a>
           ),
-          ul: ({ children }) => <ul className="mb-3 ml-5 list-disc space-y-1 text-muted-foreground marker:text-primary">{children}</ul>,
-          ol: ({ children }) => <ol className="mb-3 ml-5 list-decimal space-y-1 text-muted-foreground marker:text-primary">{children}</ol>,
+          ul: ({ children }) => <ul className="my-6 ml-[4ch] list-disc space-y-1 text-muted-foreground marker:text-primary">{children}</ul>,
+          ol: ({ children }) => <ol className="my-6 ml-[4ch] list-decimal space-y-1 text-muted-foreground marker:text-primary">{children}</ol>,
           li: ({ children }) => <li>{children}</li>,
           blockquote: ({ children }) => (
-            <blockquote className="my-3 border-l-4 border-primary/50 pl-4 italic text-muted-foreground">{children}</blockquote>
+            <blockquote className="relative my-6 border-t border-b border-primary pl-5 text-muted-foreground before:absolute before:left-0 before:top-6 before:text-primary before:content-['>']">{children}</blockquote>
           ),
           table: ({ children }) => (
-            <div className="my-3 overflow-x-auto">
-              <table className="w-full border-collapse border border-border text-sm">{children}</table>
+            <div className="my-6 overflow-x-auto">
+              <table className="border-collapse border-2 border-foreground text-sm">{children}</table>
             </div>
           ),
           th: ({ children }) => (
-            <th className="border border-border bg-muted px-3 py-2 text-left font-semibold">{children}</th>
+            <th className="border-2 border-foreground px-2.5 py-2.5 text-left font-semibold uppercase tracking-wide">{children}</th>
           ),
           td: ({ children }) => (
-            <td className="border border-border px-3 py-2">{children}</td>
+            <td className="border-2 border-foreground px-2.5 py-2.5">{children}</td>
           ),
-          hr: () => <hr className="my-6 border-border" />,
-          img: ({ src, alt }) => (
-            <img src={src} alt={alt} className="my-3 max-w-full rounded-lg border" />
-          ),
+          hr: () => <hr className="my-6 border-none bg-primary h-0.5" />,
+          img: ({ src, alt }) => {
+            const imgSrc = src && !src.startsWith('http')
+              ? `${import.meta.env.VITE_API_BASE_URL}/api/files/serve/${src}`
+              : src
+            return <img src={imgSrc} alt={alt} className="my-6 block max-w-full border-2 border-primary p-3 overflow-hidden" />
+          },
+          strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+          em: ({ children }) => <em>{children}</em>,
+          del: ({ children }) => <del className="text-muted-foreground/60">{children}</del>,
           pre: ({ children }) => <>{children}</>,
         }}
       >
@@ -185,8 +191,6 @@ export function MarkdownAppBase({ filePath, fileName }: { filePath: string; file
       </ReactMarkdown>
     </div>
   )
-
-  return <></>
 }
 
 export const MarkdownApp = React.memo(MarkdownAppBase)

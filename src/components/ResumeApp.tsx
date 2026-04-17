@@ -12,10 +12,10 @@ import {
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-3 flex items-center gap-3">
-      <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+      <h2 className="text-xs font-semibold uppercase tracking-wide text-primary">
         {children}
       </h2>
-      <div className="h-px flex-1 bg-border" />
+      <div className="h-0.5 flex-1 bg-primary" />
     </div>
   )
 }
@@ -129,7 +129,7 @@ export function ResumeApp() {
                 {group.items.map((item) => (
                   <span
                     key={item}
-                    className="rounded-md border border-border bg-muted px-2 py-0.5 text-[11px] text-foreground"
+                    className="border-t border-x border-primary/25 border-b-[3px] border-b-primary rounded bg-foreground/5 px-2 py-0.5 text-[11px] text-foreground"
                   >
                     {item}
                   </span>

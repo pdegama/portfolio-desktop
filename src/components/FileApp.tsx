@@ -22,7 +22,7 @@ export function FileApp() {
   const fetchFiles = async (path: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3001/api/files?path=${encodeURIComponent(path)}`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/files?path=${encodeURIComponent(path)}`);
       const data = await response.json();
       if (data.success) {
         setFiles(data.data);

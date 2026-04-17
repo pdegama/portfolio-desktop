@@ -80,9 +80,10 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
       const vh = window.innerHeight
       const isSmall = vw <= 500
 
-      const lastWindow = state.windows[state.windows.length - 1]
-      const baseX = Math.min(lastWindow ? lastWindow.x + 30 : 120, vw - PAD_R - width)
-      const baseY = Math.min(lastWindow ? lastWindow.y + 30 : PAD_T + 40, vh - PAD_B - height)
+      const focusdWindow = state.windows.find((w) => w.id === state.focusedId)
+      const baseX = Math.min(focusdWindow ? focusdWindow.x + 30 : 120, vw - PAD_R - width)
+      const baseY = Math.min(focusdWindow ? focusdWindow.y + 30 : PAD_T + 40, vh - PAD_B - height)
+      
       const id = crypto.randomUUID()
 
       const bounds = isSmall

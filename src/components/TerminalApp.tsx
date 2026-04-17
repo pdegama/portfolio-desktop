@@ -57,7 +57,7 @@ export function TerminalApp() {
     }, 50)
 
     // Connect to backend
-    const ws = new WebSocket('ws://localhost:3001')
+    const ws = new WebSocket(import.meta.env.VITE_API_BASE_URL.replace(/^http/, 'ws'))
 
     ws.onopen = () => {
       const attachAddon = new AttachAddon(ws)
