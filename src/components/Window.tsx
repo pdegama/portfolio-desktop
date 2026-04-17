@@ -24,6 +24,7 @@ type Edge =
 export const Window = memo(function Window({
   id,
   title,
+  icon,
   Component,
   props,
   x,
@@ -232,7 +233,10 @@ export const Window = memo(function Window({
           isFocused ? 'border-primary/30 bg-primary/5 dark:bg-primary/20' : 'border-border bg-muted',
         )}
       >
-        <span className="text-sm font-medium select-none">{title}</span>
+        <span className="flex items-center gap-1.5 text-sm font-medium select-none">
+          {icon && (() => { const Icon = icon; return <Icon className="size-3.5" /> })()}
+          {title}
+        </span>
         <div className="flex gap-1">
           <Button
             variant="outline"
@@ -279,7 +283,7 @@ export const Window = memo(function Window({
           "p-4": padding
         }
       )}>
-        <Component {...props} />
+        <Component {...props} winId={id}/>
       </div>
 
       {/* Resize handles — hidden when maximized */}

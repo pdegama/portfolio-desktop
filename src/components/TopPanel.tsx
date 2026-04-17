@@ -45,7 +45,7 @@ export function TopPanel() {
   const windows = useWindowStore((s) => s.windows)
   const { theme, setTheme } = useTheme()
 
-  const focusedTitle = windows.find((w) => w.id === focusedId && !w.minimized)?.title
+  const focusedWindow = windows.find((w) => w.id === focusedId && !w.minimized)
 
   const ThemeIcon =
     theme === 'dark' ? LuMoon : theme === 'light' ? LuSun : LuMonitor
@@ -57,8 +57,11 @@ export function TopPanel() {
     >
       {/* Left */}
       <div className="flex items-center gap-3">
-        {focusedTitle ? (
-          <span className="text-xs text-muted-foreground">{focusedTitle}</span>
+        {focusedWindow ? (
+          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            {focusedWindow.icon && (() => { const Icon = focusedWindow.icon; return <Icon className="size-3" /> })()}
+            {focusedWindow.title}
+          </span>
         ) : (
           <span className="text-xs">Parthka</span>
         )}

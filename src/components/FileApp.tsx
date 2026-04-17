@@ -2,6 +2,7 @@ import { Button } from "./ui/button"
 import { useState, useEffect } from "react"
 import { LuChevronLeft, LuChevronRight, LuHouse, LuFolder, LuFile } from "react-icons/lu"
 import { openFile } from "@/lib/openFile"
+import api from "@/lib/api"
 
 interface FileItem {
   name: string;
@@ -20,8 +21,7 @@ export function FileApp() {
   const fetchFiles = async (path: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/files?path=${encodeURIComponent(path)}`);
-      const data = await response.json();
+      const { data } = await api.get('/api/files', { params: { path } });
       if (data.success) {
         setFiles(data.data);
         setCwd(data.cwd);

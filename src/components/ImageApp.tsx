@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import { API_BASE_URL } from '@/lib/api'
 
 export function ImageApp({ filePath, fileName }: { filePath: string; fileName: string }) {
   const [error, setError] = useState(false)
-  const src = `${import.meta.env.VITE_API_BASE_URL}/api/files/serve/${filePath}`
+  const src = `${API_BASE_URL}/api/files/serve/${filePath}`
 
   if (error) {
     return (

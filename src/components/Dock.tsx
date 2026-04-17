@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react'
-import { LuFileText, LuInfo, LuSettings, LuTerminal, LuUser, LuFile } from 'react-icons/lu'
+import { LuFileText, LuInfo, LuSettings, LuTerminal, LuUser, LuFileQuestion } from 'react-icons/lu'
 import { cn } from '@/lib/utils'
 import { useWindowStore } from '@/store/window'
 import { FileApp } from '@/components/FileApp'
@@ -52,7 +52,7 @@ export function Dock() {
 
     if (existing.length === 0) {
       // No instance — open new
-      createWindow(item.title, item.Component, {}, item.size?.width, item.size?.height, item.maximiable, item.padding, item.minSize?.width, item.minSize?.height)
+      createWindow(item.title, item.Component, {}, item.size?.width, item.size?.height, item.maximiable, item.padding, item.minSize?.width, item.minSize?.height, item.icon)
     } else if (existing.length === 1) {
       const win = existing[0]
       if (win.minimized) {
@@ -135,6 +135,7 @@ export function Dock() {
             <div className="mx-0.5 h-8 w-px self-center bg-border" />
             {otherWindows.map((win) => {
               const isActive = win.id === focusedId && !win.minimized
+              const WinIcon = win.icon || LuFileQuestion
               return (
                 <Tooltip key={win.id}>
                   <TooltipTrigger
@@ -156,7 +157,7 @@ export function Dock() {
                             : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                         )}
                       >
-                        <LuFile className="size-5" />
+                        <WinIcon className="size-5" />
                         <div className="absolute -bottom-0.5 flex gap-0.5">
                           <span
                             className={cn(

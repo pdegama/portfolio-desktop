@@ -16,6 +16,7 @@ interface SavedBounds {
 export interface WindowState {
   id: string
   title: string
+  icon: ComponentType<{ className?: string }> | null
   Component: ComponentType<Record<string, unknown>>
   props: Record<string, unknown>
   x: number
@@ -46,6 +47,7 @@ interface WindowStore {
     padding?: boolean,
     minW?: number,
     minH?: number,
+    icon?: ComponentType<{ className?: string }>,
   ) => void
   closeWindow: (id: string) => void
   updatePosition: (id: string, x: number, y: number) => void
@@ -56,6 +58,7 @@ interface WindowStore {
   maximizeWindow: (id: string) => void
   unmaximizeWindow: (id: string) => void
   toggleMaximize: (id: string) => void
+  setWindowIcon: (id: string, icon: ComponentType<{ className?: string }>) => void
   clampToViewport: (vw: number, vh: number) => void
   blurAll: () => void
 }
@@ -74,7 +77,7 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
   focusedId: null,
   _zCounter: 1,
 
-  createWindow: (title, Component, props = {}, width = 320, height = 240, maximiable = true, padding = true, minW = 200, minH = 120) =>
+  createWindow: (title, Component, props = {}, width = 320, height = 240, maximiable = true, padding = true, minW = 200, minH = 120, icon) =>
     set((state) => {
       const vw = window.innerWidth
       const vh = window.innerHeight
@@ -98,6 +101,7 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
           {
             id,
             title,
+            icon: icon || null,
             Component,
             props,
             ...bounds,
@@ -203,6 +207,13 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
       get().maximizeWindow(id)
     }
   },
+
+  setWindowIcon: (id, icon) =>
+    set((state) => ({
+      windows: state.windows.map((w) =>
+        w.id === id ? { ...w, icon } : w,
+      ),
+    })),
 
   clampToViewport: (vw, vh) => {
     const areaW = vw - PAD_L - PAD_R

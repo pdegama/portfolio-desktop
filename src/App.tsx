@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import type { ComponentType } from 'react'
 import { WindowLayer } from '@/components/WindowLayer'
 import { TopPanel } from '@/components/TopPanel'
 import { Dock } from '@/components/Dock'
@@ -11,6 +12,9 @@ import {
   applyFontMode,
 } from '@/store/settings'
 import { useTheme } from '@/components/theme-provider'
+import { LuUser } from 'react-icons/lu'
+import { openFile } from '@/lib/openFile'
+import { ResumeApp } from '@/components/ResumeApp'
 
 function App() {
   const blurAll = useWindowStore((s) => s.blurAll)
@@ -37,6 +41,24 @@ function App() {
         window.matchMedia('(prefers-color-scheme: dark)').matches)
     applyAccent(ACCENT_COLORS[accentIndex], isDark)
   }, [theme, accentIndex])
+
+  // Open file from ?o= param or default to ResumeApp
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const fileParam = params.get('o')
+    if (fileParam) {
+      openFile(fileParam)
+    } else {
+      useWindowStore.getState().createWindow(
+        'Resume',
+        ResumeApp as ComponentType<Record<string, unknown>>,
+        {},
+        720, 640,
+        undefined, undefined, undefined, undefined,
+        LuUser,
+      )
+    }
+  }, [])
 
   return (
     <div

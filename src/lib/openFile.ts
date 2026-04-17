@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react'
+import { LuFileText, LuImage } from 'react-icons/lu'
 import { useWindowStore } from '@/store/window'
 import { MarkdownApp } from '@/components/MarkdownApp'
 import { ImageApp } from '@/components/ImageApp'
@@ -23,9 +24,11 @@ export function openFile(filePath: string): boolean {
   if (ext === '.md') {
     create(
       fileName,
+      // @ts-ignore
       MarkdownApp as ComponentType<Record<string, unknown>>,
       { filePath, fileName },
       720, 640, true, true, 400, 300,
+      LuFileText,
     )
     return true
   }
@@ -36,6 +39,7 @@ export function openFile(filePath: string): boolean {
       ImageApp as ComponentType<Record<string, unknown>>,
       { filePath, fileName },
       800, 600, true, false, 300, 200,
+      LuImage,
     )
     return true
   }

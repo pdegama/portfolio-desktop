@@ -3,6 +3,8 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import mermaid from 'mermaid'
 import { parse as parseToml } from 'smol-toml'
+import { LuShare2, LuCheck } from 'react-icons/lu'
+import api, { API_BASE_URL } from '@/lib/api'
 
 mermaid.initialize({ startOnLoad: false, theme: 'default' })
 
@@ -28,17 +30,9 @@ function GoatBlock({ code }: { code: string }) {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/goat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code }),
-    })
+    api.post('/api/goat', { code }, { responseType: 'text' })
       .then((res) => {
-        if (!res.ok) throw new Error('Failed')
-        return res.text()
-      })
-      .then((svg) => {
-        if (ref.current) ref.current.innerHTML = svg
+        if (ref.current) ref.current.innerHTML = res.data
       })
       .catch(() => setError(true))
   }, [code])
@@ -92,15 +86,40 @@ function formatDate(dateStr: string): string {
 
 function resolveImageUrl(src: string): string {
   if (src.startsWith('http')) return src
-  return `${import.meta.env.VITE_API_BASE_URL}/api/files/serve/${src.replace(/^\//, '')}`
+  return `${API_BASE_URL}/api/files/serve/${src.replace(/^\//, '')}`
 }
 
-function PostHeader({ fm }: { fm: FrontMatter }) {
+function ShareButton({ filePath }: { filePath: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleShare = () => {
+    const url = `${import.meta.env.VITE_FRONTEND_URL}/?o=${encodeURIComponent(filePath)}`
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <button
+      onClick={handleShare}
+      className="inline-flex items-center gap-1.5 border border-primary/25 bg-foreground/5 px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+    >
+      {copied ? <LuCheck className="size-3.5 text-primary" /> : <LuShare2 className="size-3.5" />}
+      {copied ? 'Copied!' : 'Share'}
+    </button>
+  )
+}
+
+function PostHeader({ fm, filePath }: { fm: FrontMatter; filePath: string }) {
   return (
     <header className="mb-8 space-y-4">
-      {fm.title && (
-        <h1 className="text-[1.45em] font-semibold text-foreground leading-tight">{fm.title}</h1>
-      )}
+      <div className="flex items-start justify-between gap-4">
+        {fm.title && (
+          <h1 className="text-[1.45em] font-semibold text-foreground leading-tight">{fm.title}</h1>
+        )}
+        <ShareButton filePath={filePath} />
+      </div>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         {fm.author && <span>by <span className="text-foreground font-medium">{fm.author}</span></span>}
         {fm.date && <span>{formatDate(fm.date)}</span>}
@@ -130,15 +149,7 @@ function PostHeader({ fm }: { fm: FrontMatter }) {
   )
 }
 
-export function MarkdownAppBase({ filePath, fileName }: { filePath: string; fileName: string }) {
-
-  useEffect(() => {
-    console.log('MarkdownApp mounted')
-    return () => {
-      console.log('MarkdownApp unmounted')
-    }
-  }, [])
-
+export function MarkdownAppBase({ filePath, fileName, }: { filePath: string; fileName: string; }) {
   const [rawContent, setRawContent] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -146,18 +157,16 @@ export function MarkdownAppBase({ filePath, fileName }: { filePath: string; file
   useEffect(() => {
     setLoading(true)
     setError('')
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/files/serve/${filePath}`)
+    api.get(`/api/files/serve/${filePath}`, { responseType: 'text' })
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch file')
-        return res.text()
-      })
-      .then((text) => {
-        setRawContent(text)
+        setRawContent(res.data)
         setLoading(false)
       })
       .catch((err) => {
-        setError(err.message)
+        setError(err.message || 'Failed to fetch file')
         setLoading(false)
+        alert(`Error loading ${fileName}: ${err.message || 'Unknown error'}`)
+        // closeWindow(winId)
       })
   }, [filePath])
 
@@ -214,7 +223,7 @@ export function MarkdownAppBase({ filePath, fileName }: { filePath: string; file
 
   return (
     <div className="max-w-3xl space-y-4 p-6 text-sm leading-relaxed">
-      {frontMatter && <PostHeader fm={frontMatter} />}
+      {frontMatter && <PostHeader fm={frontMatter} filePath={filePath} />}
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
@@ -257,7 +266,7 @@ export function MarkdownAppBase({ filePath, fileName }: { filePath: string; file
           hr: () => <hr className="my-6 border-none bg-primary h-0.5" />,
           img: ({ src, alt }) => {
             const imgSrc = src && !src.startsWith('http')
-              ? `${import.meta.env.VITE_API_BASE_URL}/api/files/serve/${src}`
+              ? `${API_BASE_URL}/api/files/serve/${src}`
               : src
             return <img src={imgSrc} alt={alt} className="my-6 block max-w-full border-2 border-primary p-3 overflow-hidden" />
           },
