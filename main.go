@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 
 	"portfolio/api"
@@ -39,12 +38,11 @@ func handleWebSocket(c *gin.Context) {
 	}
 	defer ws.Close()
 
-	shell := "bash"
-	if runtime.GOOS == "windows" {
-		shell = "powershell.exe"
+	exe, err := os.Executable()
+	if err != nil {
+		exe = os.Args[0]
 	}
-
-	cmd := exec.Command(shell)
+	cmd := exec.Command(exe, "--shell")
 	cmd.Env = os.Environ()
 	cmd.Dir = os.Getenv("HOME")
 	if cmd.Dir == "" {
@@ -113,6 +111,11 @@ func handleWebSocket(c *gin.Context) {
 }
 
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "--shell" {
+		RunShell()
+		return
+	}
+
 	// Load .env
 	_ = godotenv.Load()
 
