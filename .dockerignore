@@ -1,0 +1,11 @@
+.git
+.agents
+.codex
+.env
+web/.env
+web/node_modules
+web/dist
+node_modules
+tmp
+*.log
+portfolio
