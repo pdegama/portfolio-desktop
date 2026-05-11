@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { createId } from '@/lib/generateId'
 
 const STICKERS = [
   '🌟', '🔥', '💖', '🦋', '🌈', '🍕', '🎸', '🚀',
@@ -42,7 +43,7 @@ export const useStickerStore = create<StickerStore>((set, get) => ({
     set((s) => ({
       placedStickers: [
         ...s.placedStickers,
-        { id: crypto.randomUUID(), emoji: currentSticker, x, y },
+        { id: createId(), emoji: currentSticker, x, y },
       ],
       currentSticker: randomSticker(currentSticker),
     }))

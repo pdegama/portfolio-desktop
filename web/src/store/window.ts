@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import { create } from 'zustand'
+import { createId } from '@/lib/generateId'
 
 export const PAD_L = 5
 export const PAD_R = 5
@@ -87,7 +88,7 @@ export const useWindowStore = create<WindowStore>((set, get) => ({
       const baseX = Math.min(focusdWindow ? focusdWindow.x + 30 : 120, vw - PAD_R - width)
       const baseY = Math.min(focusdWindow ? focusdWindow.y + 30 : PAD_T + 40, vh - PAD_B - height)
       
-      const id = crypto.randomUUID()
+      const id = createId()
 
       const bounds = isSmall
         ? { x: PAD_L, y: PAD_T, w: vw - PAD_L - PAD_R, h: vh - PAD_T - PAD_B }
