@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Terminal as XTerm } from '@xterm/xterm'
 import { AttachAddon } from '@xterm/addon-attach'
 import { FitAddon } from '@xterm/addon-fit'
-import { API_BASE_URL } from '@/lib/api'
+import { getWebSocketUrl } from '@/lib/api'
 import '@xterm/xterm/css/xterm.css'
 
 export function TerminalApp() {
@@ -58,7 +58,7 @@ export function TerminalApp() {
     }, 50)
 
     // Connect to backend
-    const ws = new WebSocket(API_BASE_URL.replace(/^http/, 'ws'))
+    const ws = new WebSocket(getWebSocketUrl())
 
     ws.onopen = () => {
       const attachAddon = new AttachAddon(ws)
