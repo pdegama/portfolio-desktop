@@ -10,4 +10,5 @@ services:
     environment:
       PORT: ${PORT}
       FILES_BASE_PATH: ${FILES_BASE_PATH}
-   
+    volumes:
+      - ~/portpholio-data:/data
