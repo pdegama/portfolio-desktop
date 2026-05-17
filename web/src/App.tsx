@@ -21,6 +21,8 @@ import { ResumeApp } from '@/components/ResumeApp'
 function App() {
   const blurAll = useWindowStore((s) => s.blurAll)
   const clampToViewport = useWindowStore((s) => s.clampToViewport)
+  const focusedId = useWindowStore((s) => s.focusedId)
+  const windows = useWindowStore((s) => s.windows)
   const wallpaper = useSettingsStore((s) => s.wallpaper)
   const accentIndex = useSettingsStore((s) => s.accentIndex)
   const fontMode = useSettingsStore((s) => s.fontMode)
@@ -29,6 +31,15 @@ function App() {
   useEffect(() => {
     applyFontMode(fontMode)
   }, [fontMode])
+
+  useEffect(() => {
+    const focusedWindow = windows.find((w) => w.id === focusedId)
+    if (focusedWindow) {
+      document.title = `${focusedWindow.title} | Parthka`
+    } else {
+      document.title = 'Parthka'
+    }
+  }, [focusedId, windows])
 
   useEffect(() => {
     const onResize = () => clampToViewport(window.innerWidth, window.innerHeight)
